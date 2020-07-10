@@ -19,7 +19,11 @@
 
       <!-- User Data -->
       <div id="prof-container">
-        <img  src=<%= userData.images[0].url %>>
+        <% if (userData.images[0]) { %>
+          <img src=<%= userData.images[0].url %>>
+        <% } else { %>
+          <p>No profile image</p>
+        <% } %>
         <div id="prof-text">
           <h2> User </h2>
           <h1> <%= userData.display_name %> </h1>
