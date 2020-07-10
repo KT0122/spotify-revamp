@@ -20,7 +20,11 @@
 
       <!-- User Data -->
       <h2> Hello <%= userData.display_name %> </h2>
-      <img src=<%= userData.images[0].url %>>
+        <% if (userData.images[0]) { %>
+          <img src=<%= userData.images[0].url %>>
+        <% } else { %>
+          <p>No profile image</p>
+          <% } %>
       
       <!-- Playlists -->
       <h2> Your playlists </h2>
