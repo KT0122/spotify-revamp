@@ -1,0 +1,12 @@
+#start {
+  display: block,
+}
+#logged-in {
+  display: none,
+}
+
+body {
+  padding: 40px;
+  background-color: rgb(29, 29, 29);
+  color: white;
+}
