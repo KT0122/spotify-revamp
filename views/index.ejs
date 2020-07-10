@@ -6,9 +6,8 @@
     <link rel="stylesheet" href="/styles.css"> 
   </head>
   <body>
-    <h1>Spotify Test Page</h1>
-
     <div id="start">
+      <h1>Spotify Test Page</h1>
       <a href="/login">Log in with Spotify</a>
     </div>
 
@@ -19,20 +18,24 @@
       </script>
 
       <!-- User Data -->
-      <h2> Hello <%= userData.display_name %> </h2>
-      <img src=<%= userData.images[0].url %>>
+      <div id="prof-container">
+        <img  src=<%= userData.images[0].url %>>
+        <div id="prof-text">
+          <h2> User </h2>
+          <h1> <%= userData.display_name %> </h1>
+        </div>
+      </div>
       
       <!-- Playlists -->
-      <h2> Your playlists </h2>
-      <table>
+      <h2> Public Playlists </h2>
+      <div class="grid-container">
         <% for(var i=0; i < playlist.items.length; i++) { %>
-        <tr>
-          <td><%= playlist.items[i].name %></td>
-          <td> <a href=<%= playlist.items[i].uri %>>View this playlist</a></td>
-        </tr>
+          <div class="grid-item">
+            <a href=<%= playlist.items[i].uri %>> <img id='pl-img' src=<%= playlist.items[i].images[0].url %>> </a> 
+            <h3> <%= playlist.items[i].name %> </h3>
+          </div>
         <% } %>
-      </table>
-      
+      </div>
     <% } %>
     
   </body>

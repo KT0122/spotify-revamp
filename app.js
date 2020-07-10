@@ -9,6 +9,7 @@ var app = express.Router();
   const CLIENTSECRET ='yourClientSecret'
   const URI = 'yourURI'
  */
+
   const CLIENTID = 'yourClientID'
   const CLIENTSECRET ='yourClientSecret'
   const URI = 'yourURI'
@@ -67,15 +68,16 @@ app.get('/callback', async (req,res) => {
  * TO-DO: Add most functions here to retrieve data and display it back  
  */
 app.use('/profile', function(req, res, next) {
-
   spotifyApi.getMe()
     .then(function(data) {
       res.locals.user = data.body;
+      console.log(data.body);
       res.locals.id = data.body.id;
       next()
     }, function(err) {
       console.log('Something went wrong!', err);
   });
+
 
 });
 
