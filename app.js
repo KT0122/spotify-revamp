@@ -1,6 +1,8 @@
 var express = require('express');
 var exp = express()
 var app = express.Router();
+var request = require('request')
+
 
 /*
  * Spotify API setup
@@ -15,7 +17,7 @@ var app = express.Router();
   const URI = 'yourURI'
 
 var SpotifyWebApi = require('spotify-web-api-node');
-scopes = ['user-read-private', 'user-read-email']
+scopes = ['user-read-private', 'user-read-email','user-top-read']
 
 var spotifyApi = new SpotifyWebApi({
   clientId: CLIENTID,
@@ -27,12 +29,39 @@ var spotifyApi = new SpotifyWebApi({
 /*
  * EJS and variables setup
  */
+ let Tracks = class  {
+  constructor(topTracks) {
+    this._tracks = topTracks;
+  }
+  get tracks() {
+    return this._tracks;
+  }
+  set tracks(x) {
+    this._tracks = x;
+  }
+}
+
+let Artists = class  {
+  constructor(topArtists) {
+    this._artists = topArtists;
+  }
+  get artists() {
+    return this._artists;
+  }
+  set artists(x) {
+    this._artists = x;
+  }
+}
+
+var topTracks = new Tracks("");
+var topArtists = new Artists("");
+
 exp.set('view engine', 'ejs');
 exp.use(express.static(__dirname + '/public'));
 
 // Initialize empty EJS variables here
 app.get('/',function(req,res){
-  res.render( 'index',{userData:"", playlist:""});
+  res.render( 'index',{userData:"", playlist:"", tracksData:"", artistsData:""});
 });
 
 
@@ -55,11 +84,40 @@ app.get('/callback', async (req,res) => {
     const { access_token, refresh_token } = data.body;
     spotifyApi.setAccessToken(access_token);
     spotifyApi.setRefreshToken(refresh_token);
-
-    res.redirect(URI + '/profile');
   } catch(err) {
     res.redirect('/#/error/invalid token');
   }
+
+/*
+ * Query Parameters for retrieving top songs and artists
+ */
+
+ // The number of entities to return. Default: 20. Minimum: 1. Maximum: 50
+  const limit = 50;
+
+ // Valid values: 
+ // long_term (calculated from several years of data and including all new data as it becomes available)
+ // medium_term (approximately last 6 months), 
+ // short_term (approximately last 4 weeks).
+  const timeRange = 'medium_term';
+
+// Getting user's top artists
+  var options = {
+    url: 'https://api.spotify.com/v1/me/top/artists'+'?limit='+limit+"&time_range="+timeRange,
+    headers: { 'Authorization': 'Bearer ' + spotifyApi.getAccessToken()},
+    json: true
+  };
+  request.get(options, function(error, response, body) {
+    topArtists.artists = body;
+  });
+
+// Getting user's top tracks
+  options.url = 'https://api.spotify.com/v1/me/top/tracks'+'?limit='+limit+"&time_range="+timeRange;
+  request.get(options, function(error, response, body) {
+    topTracks.tracks = body;
+  });
+
+ res.redirect('/profile');
 });
 
 
@@ -71,7 +129,6 @@ app.use('/profile', function(req, res, next) {
   spotifyApi.getMe()
     .then(function(data) {
       res.locals.user = data.body;
-      console.log(data.body);
       res.locals.id = data.body.id;
       next()
     }, function(err) {
@@ -86,17 +143,21 @@ app.use('/profile', function(req, res, next) {
   spotifyApi.getUserPlaylists(res.locals.id)
     .then(function(data) {
       res.locals.playlist = data.body;
-      next()
+      next();
     },function(err) {
       console.log('Something went wrong!', err);
   });
 
 });
 
+
 app.use('/profile', function(req, res, next) {
+
+  console.log(topTracks.tracks.items[0].album);
+
   // Display variables back to index
-  console.log("Retrieved playlists ", res.locals.playlist);
-  res.render('index', {userData: res.locals.user, playlist: res.locals.playlist});
+  res.render('index', {userData: res.locals.user, playlist: res.locals.playlist,
+                       tracksData: topTracks.tracks, artistsData: topArtists.artists});
 
 });
 

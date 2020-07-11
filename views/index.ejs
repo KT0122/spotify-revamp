@@ -30,16 +30,45 @@
         </div>
       </div>
       
+       <!-- User's Top Songs -->
+      <h2> Top Songs </h2>
+      <div class="grid-container">
+        <% for(var i=0; i < tracksData.items.length; i++) { %>
+          <div class="grid-item">
+            <a href=<%= tracksData.items[i].uri %>> 
+              <img id='pl-img' src=<%= tracksData.items[i].album.images[0].url %>> 
+            </a> 
+            <h3> <%= tracksData.items[i].name %> </h3>
+          </div>
+        <% } %>
+      </div>
+
+      <!-- User's Top Artists -->
+      <h2> Top Artists </h2>
+      <div class="grid-container">
+        <% for(var i=0; i < artistsData.items.length; i++) { %>
+          <div class="grid-item">
+            <a href=<%= artistsData.items[i].uri %>> 
+              <img id='pl-img' src=<%= artistsData.items[i].images[0].url %>> 
+            </a> 
+            <h3> <%= artistsData.items[i].name %> </h3>
+          </div>
+        <% } %>
+      </div>
+
       <!-- Playlists -->
       <h2> Public Playlists </h2>
       <div class="grid-container">
         <% for(var i=0; i < playlist.items.length; i++) { %>
           <div class="grid-item">
-            <a href=<%= playlist.items[i].uri %>> <img id='pl-img' src=<%= playlist.items[i].images[0].url %>> </a> 
+            <a href=<%= playlist.items[i].uri %>>
+              <img id='pl-img' src=<%= playlist.items[i].images[0].url %>> 
+            </a> 
             <h3> <%= playlist.items[i].name %> </h3>
           </div>
         <% } %>
       </div>
+
     <% } %>
     
   </body>
