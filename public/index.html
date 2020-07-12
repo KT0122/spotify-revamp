@@ -1,0 +1,154 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="UTF-8">
+    <title>Spotify Revamped</title>
+    <link rel="stylesheet" href="/styles.css"> 
+  </head>
+  <body>
+    <div id="login">
+      <h1>Spotify Test Page</h1>
+      <a href="/login">Log in with Spotify</a>
+    </div>
+    <!-- PROFILE PAGE HERE -->
+     <div id="loggedin">
+        <div id="showUser"></div>
+        <h2> Top Songs </h2>
+        <div id="showSongs" class="grid-container"></div>
+        <h2> Top Artists </h2>
+        <div id="showArtists" class="grid-container"></div>
+        <h2> Your Playlists </h2>
+        <div id="showPlaylists" class="grid-container"></div>
+     </div>
+   
+    <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
+
+    <script>
+      (function() {
+        /**
+         * Obtains parameters from the hash of the URL
+         * @return Object
+         */
+        function getHashParams() {
+          var hashParams = {};
+          var e, r = /([^&;=]+)=?([^&;]*)/g,
+              q = window.location.hash.substring(1);
+          while ( e = r.exec(q)) {
+             hashParams[e[1]] = decodeURIComponent(e[2]);
+          }
+          return hashParams;
+        }
+
+       // Get user info
+        var params = getHashParams();
+
+        var access_token = params.access_token,
+            refresh_token = params.refresh_token,
+            error = params.error;
+        
+        if (error) {
+          alert('There was an error during the authentication');
+        } else {
+
+           $.ajax({
+                url: 'https://api.spotify.com/v1/me',
+                headers: {
+                  'Authorization': 'Bearer ' + access_token
+                },
+                success: function(response) {
+                outputToDiv(response, 0, "#showUser");
+                  // Get playlists 
+                  $.ajax({
+                       url: 'https://api.spotify.com/v1/users/'+ response.id +'/playlists',
+                       type: 'GET',
+                       headers: {
+                         'Authorization' : 'Bearer ' + access_token
+                       },
+                       contentType:"application/json",
+                       success: function(response) {
+                         var items = response.items;
+                         for(var i=0; i<items.length; i++) {
+                           outputToDiv(items, i, "#showPlaylists");
+                         }
+                       }
+                  });
+                  $('#login').hide();
+                  $('#loggedin').show();
+                }
+            });
+        }
+          // Get top tracks info
+           $.ajax({
+                url: 'https://api.spotify.com/v1/me/top/tracks',
+                type: 'GET',
+                headers: {
+                  'Authorization' : 'Bearer ' + access_token
+                },
+                contentType:"application/json",
+                success: function(response) {
+                  var items = response.items;
+                  for(var i=0; i<items.length; i++){
+                    outputToDiv(items, i, "#showSongs");
+                  }
+                }
+            });
+          // Get top artists info
+           $.ajax({
+                url: 'https://api.spotify.com/v1/me/top/artists',
+                type: 'GET',
+                headers: {
+                  'Authorization' : 'Bearer ' + access_token
+                },
+                contentType:"application/json",
+                success: function(response) {
+                  var items = response.items;
+                  for(var i=0; i<items.length; i++){
+                    outputToDiv(items, i, "#showArtists");
+                  }
+                }
+            });
+         
+
+        function outputToDiv(items,i,id) {
+          // Edit User Profile Design Here!!!!
+          if(id==="#showUser") {
+            $(id).append(                
+               "<div id='prof-container'>" +
+                 "<img src=" + items.images[0].url + ">" +
+                 "<div id='prof-text'>" +
+                   "<h2> User </h2>" +
+                   "<h1>" + items.display_name + "</h1>" +
+                 "</div>" +
+               "</div>"
+              );
+          // Edit Top Songs Design Here!!!!
+          } else if(id==="#showSongs") {               
+            $(id).append(                
+                "<div class='grid-item'>" +
+                  "<a href=" + items[i].uri + "> <img id='pl-img' src=" + items[i].album.images[0].url + "> </a>" +
+                  "<h3>" + items[i].name + "</h3>" +
+                "</div>"
+                );
+          // Edit Top Artists Design Here!!!!
+          } else if (id==="#showArtists"){
+            $(id).append(                
+                "<div class='grid-item'>" +
+                  "<a href=" + items[i].uri + "> <img id='pl-img' src=" + items[i].images[0].url + "> </a>" +
+                  "<h3>" + items[i].name + "</h3>" +
+                "</div>"
+                );
+          // Edit Playlists Design Here!!!!   
+          } else {
+           $(id).append(                
+                "<div class='grid-item'>" +
+                  "<a href=" + items[i].uri + "> <img id='pl-img' src=" + items[i].images[0].url + "> </a>" +
+                  "<h3>" + items[i].name + "</h3>" +
+                "</div>"
+                );       
+          }
+        }
+      })();
+    </script>
+
+  </body>
+</html>
