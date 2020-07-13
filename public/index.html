@@ -17,35 +17,24 @@
         var searchType = $('#search-form').serializeArray()[0].value;
         var searchTerm = $('#search-form').serializeArray()[1].value;
         console.log('searched for: ' + searchTerm);
-        if (searchType === "album"){findAlbum(searchTerm);}
-        else if (searchType === "artist"){findArtist(searchTerm);}
-        else if (searchType === "song"){findSong(searchTerm);}
-        else if (searchType === "playlist"){findPlaylist(searchTerm);}
-        else {console.log("searchType = " + searchType);}
-      }
-
-      function findAlbum(searchTerm){
-        console.log("entered findAlbum");
-        $('#search-results').html('<strong>Album results for </strong>'+searchTerm);
+        $('#search-results').html('<strong>'+searchType+' results for </strong>'+searchTerm);
+        
         // TODO:Get results
-      }
+        // GET 
+        if (searchType === "Album"){
+          //"https://api.spotify.com/v1/search?q="+searchTerm+"&type=albums&limit=6&offset=0"
+        } else if (searchType === "Artist"){
+          //"https://api.spotify.com/v1/search?q="+searchTerm+"&type=artists&limit=6&offset=0"
+        } else if (searchType === "Song"){
+          //"https://api.spotify.com/v1/search?q="+searchTerm+"&type=tracks&limit=6&offset=0"
+        } else if (searchType === "Playlist"){
+          //"https://api.spotify.com/v1/search?q="+searchTerm+"&type=playlists&limit=6&offset=0"
+        } else {
+          console.log("searchType = " + searchType);
+        }
 
-      function findArtist(searchTerm){
-        console.log("entered findArtist");
-        $('#search-results').html('<strong>Artist results for </strong>'+searchTerm);
-        // TODO:Get results
-      }
+        // TODO:Display results
 
-      function findSong(searchTerm){
-        console.log("entered findSong");
-        $('#search-results').html('<strong>Song results for </strong>'+searchTerm);
-        // TODO:Get results
-      }
-
-      function findPlaylist(searchTerm){
-        console.log("entered findPlaylist");
-        $('#search-results').html('<strong>Playlist results for </strong>'+searchTerm);
-        // TODO:Get results
       }
     </script>
 
@@ -53,10 +42,10 @@
       <form id="search-form" method="dialog" target="_blank">
         <!-- <label for="search"> -->Search <!-- </label> -->
         <select name="type">
-          <option value="album">albums</option>
-          <option value="artist">artists</option>
-          <option value="song" selected="selected">songs</option>
-          <option value="playlist">playlists</option>
+          <option value="Album">albums</option>
+          <option value="Artist">artists</option>
+          <option value="Aong" selected="selected">songs</option>
+          <option value="Playlist">playlists</option>
         </select>
         <input type="search" name="search">
         <input type="submit" value="Search" onclick="find()">
@@ -65,8 +54,7 @@
 
     <!-- SEARCH RESULTS HERE-->
     <div id="search-results"></div>
-    <div id="temp"></div>
-
+    
     <!-- PROFILE PAGE HERE -->
      <div id="loggedin">
         <div id="showUser"></div>
@@ -113,23 +101,23 @@
                 },
                 success: function(response) {
                 outputToDiv(response, 0, "#showUser");
-                  // Get playlists 
-                  $.ajax({
-                       url: 'https://api.spotify.com/v1/users/'+ response.id +'/playlists',
-                       type: 'GET',
-                       headers: {
-                         'Authorization' : 'Bearer ' + access_token
-                       },
-                       contentType:"application/json",
-                       success: function(response) {   
-                         var items = response.items;
-                         for(var i=0; i<items.length; i++) {
-                           outputToDiv(items, i, "#showPlaylists");
-                         }
-                       }
-                  });
                 }
             });
+          // Get playlists 
+          $.ajax({
+                url: 'https://api.spotify.com/v1/me/playlists',
+                type: 'GET',
+                headers: {
+                  'Authorization' : 'Bearer ' + access_token
+                },
+                contentType:"application/json",
+                success: function(response) {   
+                  var items = response.items;
+                  for(var i=0; i<items.length; i++) {
+                    outputToDiv(items, i, "#showPlaylists");
+                  }
+                }
+          });
 
           // Get top tracks info
            $.ajax({
@@ -194,7 +182,8 @@
             if(items[i].album.images[0]) {               
             $(id).append(                
                 "<div class='grid-item'>" +
-                  "<a href=" + items[i].uri + "> <img id='pl-img' src=" + items[i].album.images[0].url + "> </a>" +
+                  "<iframe src='https://open.spotify.com/embed/track/"+items[i].id+"' width='300' height='380' frameborder='0' allowtransparency='true' allow='encrypted-media'></iframe>"+
+                  //"<a href=" + items[i].external_urls.spotify + " target='_blank'> <img id='pl-img' src=" + items[i].album.images[0].url + "> </a>" +
                   "<h3>" + items[i].name + "</h3>" +
                 "</div>"
                 );
@@ -202,7 +191,8 @@
             } else {
             $(id).append(                
                 "<div class='grid-item'>" +
-                  "<a href=" + items[i].uri + "> <h2> No album image </h2> </a>" +
+                  "<iframe src='https://open.spotify.com/embed/track/"+items[i].id+"' width='300' height='380' frameborder='0' allowtransparency='true' allow='encrypted-media'></iframe>"+
+                  //"<a href=" + items[i].external_urls.spotify + "> <h2> No album image </h2> </a>" +
                   "<h3>" + items[i].name + "</h3>" +
                 "</div>"
                 );
@@ -212,14 +202,16 @@
             if(items[i].images[0]) {
             $(id).append(                
                 "<div class='grid-item'>" +
-                  "<a href=" + items[i].uri + "> <img id='pl-img' src=" + items[i].images[0].url + "> </a>" +
+                  "<iframe src='https://open.spotify.com/embed/artist/"+items[i].id+"' width='300' height='380' frameborder='0' allowtransparency='true' allow='encrypted-media'></iframe>"+
+                  //"<a href=" + items[i].uri + "> <img id='pl-img' src=" + items[i].images[0].url + "> </a>" +
                   "<h3>" + items[i].name + "</h3>" +
                 "</div>"
                 );
             } else {
             $(id).append(                
                 "<div class='grid-item'>" +
-                  "<a href=" + items[i].uri + "> <h2> No album image </h2> </a>" +
+                  "<iframe src='https://open.spotify.com/embed/artist/"+items[i].id+"' width='300' height='380' frameborder='0' allowtransparency='true' allow='encrypted-media'></iframe>"+
+                  //"<a href=" + items[i].uri + "> <h2> No album image </h2> </a>" +
                   "<h3>" + items[i].name + "</h3>" +
                 "</div>"
                 );
@@ -229,7 +221,8 @@
            if(items[i].images[0]) {
            $(id).append(                
                 "<div class='grid-item'>" +
-                  "<a href=" + items[i].uri + "> <img id='pl-img' src=" + items[i].images[0].url + "> </a>" +
+                  "<iframe src='https://open.spotify.com/embed/playlist/"+items[i].id+"' width='300' height='380' frameborder='0' allowtransparency='true' allow='encrypted-media'></iframe>"+
+                  //"<a href=" + items[i].uri + "> <img id='pl-img' src=" + items[i].images[0].url + "> </a>" +
                   "<h3>" + items[i].name + "</h3>" +
                 "</div>"
                 ); 
@@ -237,7 +230,8 @@
            } else {
            $(id).append(                
                 "<div class='grid-item'>" +
-                  "<a href=" + items[i].uri + "> <h2> No playlist image </h2> </a>" +
+                  "<iframe src='https://open.spotify.com/embed/playlist/"+items[i].id+"' width='300' height='380' frameborder='0' allowtransparency='true' allow='encrypted-media'></iframe>"+
+                  //"<a href=" + items[i].uri + "> <h2> No playlist image </h2> </a>" +
                   "<h3>" + items[i].name + "</h3>" +
                 "</div>"
                 ); 
@@ -251,6 +245,5 @@
         }
       })();
     </script>
-
   </body>
 </html>
