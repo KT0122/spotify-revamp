@@ -37,6 +37,7 @@ body {
 .grid-container {
   display: grid;
   grid-gap: 20px;
+  overflow: overlay;
 }
 
 .grid-item {

@@ -10,6 +10,63 @@
       <h1>Spotify Test Page</h1>
       <button id='login-btn' ><a href="/login">Log in with Spotify</a></button>
     </div>
+
+    <script src="https://code.jquery.com/jquery-git2.js"></script>
+    <script>
+      function find(){
+        var searchType = $('#search-form').serializeArray()[0].value;
+        var searchTerm = $('#search-form').serializeArray()[1].value;
+        console.log('searched for: ' + searchTerm);
+        if (searchType === "album"){findAlbum(searchTerm);}
+        else if (searchType === "artist"){findArtist(searchTerm);}
+        else if (searchType === "song"){findSong(searchTerm);}
+        else if (searchType === "playlist"){findPlaylist(searchTerm);}
+        else {console.log("searchType = " + searchType);}
+      }
+
+      function findAlbum(searchTerm){
+        console.log("entered findAlbum");
+        $('#search-results').html('<strong>Album results for </strong>'+searchTerm);
+        // TODO:Get results
+      }
+
+      function findArtist(searchTerm){
+        console.log("entered findArtist");
+        $('#search-results').html('<strong>Artist results for </strong>'+searchTerm);
+        // TODO:Get results
+      }
+
+      function findSong(searchTerm){
+        console.log("entered findSong");
+        $('#search-results').html('<strong>Song results for </strong>'+searchTerm);
+        // TODO:Get results
+      }
+
+      function findPlaylist(searchTerm){
+        console.log("entered findPlaylist");
+        $('#search-results').html('<strong>Playlist results for </strong>'+searchTerm);
+        // TODO:Get results
+      }
+    </script>
+
+    <div id="search-bar">
+      <form id="search-form" method="dialog" target="_blank">
+        <!-- <label for="search"> -->Search <!-- </label> -->
+        <select name="type">
+          <option value="album">albums</option>
+          <option value="artist">artists</option>
+          <option value="song" selected="selected">songs</option>
+          <option value="playlist">playlists</option>
+        </select>
+        <input type="search" name="search">
+        <input type="submit" value="Search" onclick="find()">
+      </form>
+    </div> 
+
+    <!-- SEARCH RESULTS HERE-->
+    <div id="search-results"></div>
+    <div id="temp"></div>
+
     <!-- PROFILE PAGE HERE -->
      <div id="loggedin">
         <div id="showUser"></div>
@@ -20,7 +77,7 @@
         <h2> Your Playlists </h2>
         <div id="showPlaylists" class="grid-container"></div>
      </div>
-
+    
     <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
 
     <script>
@@ -106,7 +163,6 @@
                   }
                 },
             });
-         
 
          function outputToDiv(items,i,id) {
           // Edit User Profile Design Here!!!!
