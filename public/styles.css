@@ -1,7 +1,7 @@
-#start {
+#login {
   display: block,
 }
-#logged-in {
+#loggedin {
   display: none,
 }
 
