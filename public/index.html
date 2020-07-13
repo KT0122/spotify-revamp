@@ -3,12 +3,12 @@
   <head>
     <meta charset="UTF-8">
     <title>Spotify Revamped</title>
-    <link rel="stylesheet" href="/styles.css"> 
+    <link href="styles.css" rel="stylesheet" type="text/css"/>
   </head>
   <body>
     <div id="login">
       <h1>Spotify Test Page</h1>
-      <a href="/login">Log in with Spotify</a>
+      <button id='login-btn' ><a href="/login">Log in with Spotify</a></button>
     </div>
     <!-- PROFILE PAGE HERE -->
      <div id="loggedin">
@@ -20,7 +20,7 @@
         <h2> Your Playlists </h2>
         <div id="showPlaylists" class="grid-container"></div>
      </div>
-   
+
     <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
 
     <script>
@@ -48,8 +48,7 @@
         
         if (error) {
           alert('There was an error during the authentication');
-        } else {
-
+        } else if(params.access_token) {
            $.ajax({
                 url: 'https://api.spotify.com/v1/me',
                 headers: {
@@ -65,18 +64,16 @@
                          'Authorization' : 'Bearer ' + access_token
                        },
                        contentType:"application/json",
-                       success: function(response) {
+                       success: function(response) {   
                          var items = response.items;
                          for(var i=0; i<items.length; i++) {
                            outputToDiv(items, i, "#showPlaylists");
                          }
                        }
                   });
-                  $('#login').hide();
-                  $('#loggedin').show();
                 }
             });
-        }
+
           // Get top tracks info
            $.ajax({
                 url: 'https://api.spotify.com/v1/me/top/tracks',
@@ -87,7 +84,7 @@
                 contentType:"application/json",
                 success: function(response) {
                   var items = response.items;
-                  for(var i=0; i<items.length; i++){
+                  for(var i=0; i<items.length; i++) {
                     outputToDiv(items, i, "#showSongs");
                   }
                 }
@@ -101,17 +98,20 @@
                 },
                 contentType:"application/json",
                 success: function(response) {
+                  $('#login').hide();
+                  $('#loggedin').show();
                   var items = response.items;
                   for(var i=0; i<items.length; i++){
                     outputToDiv(items, i, "#showArtists");
                   }
-                }
+                },
             });
          
 
-        function outputToDiv(items,i,id) {
+         function outputToDiv(items,i,id) {
           // Edit User Profile Design Here!!!!
           if(id==="#showUser") {
+            if(items.images[0]) {
             $(id).append(                
                "<div id='prof-container'>" +
                  "<img src=" + items.images[0].url + ">" +
@@ -121,31 +121,77 @@
                  "</div>" +
                "</div>"
               );
+            // User with no profile image
+            } else {
+            $(id).append(                
+               "<div id='prof-container'>" +
+                "<h2> No profile image </h2>" +
+                 "<div id='prof-text'>" +
+                   "<h2> User </h2>" +
+                   "<h1>" + items.display_name + "</h1>" +
+                 "</div>" +
+               "</div>"
+              );
+            }
           // Edit Top Songs Design Here!!!!
-          } else if(id==="#showSongs") {               
+          } else if(id==="#showSongs") {  
+            if(items[i].album.images[0]) {               
             $(id).append(                
                 "<div class='grid-item'>" +
                   "<a href=" + items[i].uri + "> <img id='pl-img' src=" + items[i].album.images[0].url + "> </a>" +
                   "<h3>" + items[i].name + "</h3>" +
                 "</div>"
                 );
+            // No album image
+            } else {
+            $(id).append(                
+                "<div class='grid-item'>" +
+                  "<a href=" + items[i].uri + "> <h2> No album image </h2> </a>" +
+                  "<h3>" + items[i].name + "</h3>" +
+                "</div>"
+                );
+            }
           // Edit Top Artists Design Here!!!!
           } else if (id==="#showArtists"){
+            if(items[i].images[0]) {
             $(id).append(                
                 "<div class='grid-item'>" +
                   "<a href=" + items[i].uri + "> <img id='pl-img' src=" + items[i].images[0].url + "> </a>" +
                   "<h3>" + items[i].name + "</h3>" +
                 "</div>"
                 );
+            } else {
+            $(id).append(                
+                "<div class='grid-item'>" +
+                  "<a href=" + items[i].uri + "> <h2> No album image </h2> </a>" +
+                  "<h3>" + items[i].name + "</h3>" +
+                "</div>"
+                );
+            }
           // Edit Playlists Design Here!!!!   
           } else {
+           if(items[i].images[0]) {
            $(id).append(                
                 "<div class='grid-item'>" +
                   "<a href=" + items[i].uri + "> <img id='pl-img' src=" + items[i].images[0].url + "> </a>" +
                   "<h3>" + items[i].name + "</h3>" +
                 "</div>"
-                );       
+                ); 
+           // No playlist cover image
+           } else {
+           $(id).append(                
+                "<div class='grid-item'>" +
+                  "<a href=" + items[i].uri + "> <h2> No playlist image </h2> </a>" +
+                  "<h3>" + items[i].name + "</h3>" +
+                "</div>"
+                ); 
+           }      
           }
+        }
+      } else {
+        // render initial screen
+        $('#login').show();
+        $('#loggedin').hide();
         }
       })();
     </script>

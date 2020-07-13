@@ -1,7 +1,6 @@
 var express = require('express');
 var exp = express()
 var app = express.Router();
-var request = require('request')
 var querystring = require('querystring');
 
 /*
@@ -11,7 +10,6 @@ var querystring = require('querystring');
   const CLIENTSECRET ='yourClientSecret'
   const URI = 'yourURI'
  */
-
   const CLIENTID = 'yourClientID'
   const CLIENTSECRET ='yourClientSecret'
   const URI = 'yourURI'
@@ -26,18 +24,8 @@ var spotifyApi = new SpotifyWebApi({
 });
 
 
-/*
- * EJS and variables setup
- */
-var tracks = " ";
-var artists = " ";
 
 exp.use(express.static(__dirname + '/public'));
-
-// Initialize empty EJS variables here
-app.get('/',function(req,res){
-  res.render( 'index',{userData:"", playlist:"", tracksData:"", artistsData:"", authCode:""});
-});
 
 
 /*
