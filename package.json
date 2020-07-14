@@ -26,6 +26,7 @@
     "googleapis": "^39.2.0",
     "path": "^0.12.7",
     "request": "^2.88.2",
+    "require-node": "^2.0.8",
     "spotify-web-api-node": "^4.0.0"
   }
 }

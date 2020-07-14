@@ -17,10 +17,12 @@
         <div id="showSongs" class="grid-container"></div>
         <h2> Top Artists </h2>
         <div id="showArtists" class="grid-container"></div>
+        <h2> Top Albums </h2>
+        <div id="showAlbums" class="grid-container"></div>
         <h2> Your Playlists </h2>
         <div id="showPlaylists" class="grid-container"></div>
      </div>
-
+     
     <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
 
     <script>
@@ -45,6 +47,9 @@
         var access_token = params.access_token,
             refresh_token = params.refresh_token,
             error = params.error;
+
+        var map = new Map();
+        var albumInfo = new Set();
         
         if (error) {
           alert('There was an error during the authentication');
@@ -87,6 +92,14 @@
                   for(var i=0; i<items.length; i++) {
                     outputToDiv(items, i, "#showSongs");
                   }
+                 // Get top albums
+                 map =  findTopAlbums(map, items);
+                 console.log(map);
+                 for(var i=0; i<map.length; i++) {
+                   for(var j=0; j<map[i].length;i++) {
+                     outputToDiv(map[i], j, "#showAlbums");
+                   }
+                 }
                 }
             });
           // Get top artists info
@@ -101,12 +114,45 @@
                   $('#login').hide();
                   $('#loggedin').show();
                   var items = response.items;
-                  for(var i=0; i<items.length; i++){
+                  for(var i=0; i<items.length; i++) {
                     outputToDiv(items, i, "#showArtists");
                   }
                 },
             });
          
+         
+         function findTopAlbums(map, items) { 
+            var name; 
+           for(var i=0; i< items.length; i++) { 
+              name = items[i].album.name;  
+             if(!map.has(name)) {
+               map.set(name, 1);
+             } else if(map.has(name)) {
+                map.set(name, map.get(name)+1);
+             } 
+           }
+           // deleting albums in which only one song was heard
+           for(var i=0; i< items.length; i++) { 
+             name = items[i].album.name;  
+             if(map.get(name)===1) {
+               map.delete(name);
+             } 
+           }
+           // getting album info
+           for(var i=0; i< items.length; i++) { 
+             if(map.has(items[i].album.name)) {
+               map.set(items[i].album, map.get(items[i].album.name));
+               map.delete(items[i].album.name);
+             }  
+           }
+           // sorting map
+           map[Symbol.iterator] = function* () {
+             yield* [...this.entries()].sort((a, b) => b[1] - a[1]);
+           }
+              return [...map];            
+         }
+        
+
 
          function outputToDiv(items,i,id) {
           // Edit User Profile Design Here!!!!
@@ -135,24 +181,44 @@
             }
           // Edit Top Songs Design Here!!!!
           } else if(id==="#showSongs") {  
-            if(items[i].album.images[0]) {               
-            $(id).append(                
-                "<div class='grid-item'>" +
+              if(items[i].album.images[0]) {           
+                $(id).append(                
+                  "<div class='grid-item'>" +
                   "<a href=" + items[i].uri + "> <img id='pl-img' src=" + items[i].album.images[0].url + "> </a>" +
                   "<h3>" + items[i].name + "</h3>" +
-                "</div>"
+                  "</div>"
                 );
-            // No album image
-            } else {
-            $(id).append(                
-                "<div class='grid-item'>" +
+
+              // No album image
+              } else {
+                $(id).append(                
+                  "<div class='grid-item'>" +
                   "<a href=" + items[i].uri + "> <h2> No album image </h2> </a>" +
                   "<h3>" + items[i].name + "</h3>" +
-                "</div>"
+                  "</div>"
+                );
+            }
+          // Edit Top Albums Design Here!!!!
+          } else if(id==="#showAlbums") {  
+              if(items[i].images[0]) {           
+                $(id).append(                
+                  "<div class='grid-item'>" +
+                  "<a href=" + items[i].uri + "> <img id='pl-img' src=" + items[i].images[0].url + "> </a>" +
+                  "<h3>" + items[i].name + "</h3>" +
+                  "</div>"
+                );
+
+              // No album image
+              } else {
+                $(id).append(                
+                  "<div class='grid-item'>" +
+                  "<a href=" + items[i].uri + "> <h2> No album image </h2> </a>" +
+                  "<h3>" + items[i].name + "</h3>" +
+                  "</div>"
                 );
             }
           // Edit Top Artists Design Here!!!!
-          } else if (id==="#showArtists"){
+          } else if (id==="#showArtists") {
             if(items[i].images[0]) {
             $(id).append(                
                 "<div class='grid-item'>" +
