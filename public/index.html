@@ -13,6 +13,11 @@
     <!-- PROFILE PAGE HERE -->
      <div id="loggedin">
         <div id="showUser"></div>
+        <div id="player"></div>
+        <button id='btn-prev' >Previous</button>
+        <button id='btn-play' >Play</button>
+        <button id='btn-pause' >Pause</button>
+        <button id='btn-next' >Next</button>
         <h2> Top Songs </h2>
         <div id="showSongs" class="grid-container"></div>
         <h2> Top Artists </h2>
@@ -24,6 +29,7 @@
      </div>
      
     <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
+    <script src="https://sdk.scdn.co/spotify-player.js"></script>
 
     <script>
       (function() {
@@ -36,7 +42,7 @@
           var e, r = /([^&;=]+)=?([^&;]*)/g,
               q = window.location.hash.substring(1);
           while ( e = r.exec(q)) {
-             hashParams[e[1]] = decodeURIComponent(e[2]);
+            hashParams[e[1]] = decodeURIComponent(e[2]);
           }
           return hashParams;
         }
@@ -94,7 +100,6 @@
                   }
                  // Get top albums
                  map =  findTopAlbums(map, items);
-                 console.log(map);
                  for(var i=0; i<map.length; i++) {
                      outputToDiv(map[i], 0, "#showAlbums");
                  }
@@ -111,14 +116,122 @@
                 success: function(response) {
                   $('#login').hide();
                   $('#loggedin').show();
+                  
                   var items = response.items;
                   for(var i=0; i<items.length; i++) {
                     outputToDiv(items, i, "#showArtists");
                   }
                 },
             });
-         
-         
+          
+         controlWebPlayer(access_token, "",false);
+         // Getting Spotify player 
+         getPlayer(access_token);
+
+         function getPlayer(t) {
+           window.onSpotifyWebPlaybackSDKReady = () => {
+             const token = t;
+             const player = new Spotify.Player({
+             name: 'Web Playback SDK Quick Start Player',
+               getOAuthToken: cb => { cb(token); }
+             });
+
+             // Error handling
+             player.addListener('initialization_error', ({ message }) => { console.error(message); });
+             player.addListener('authentication_error', ({ message }) => { console.error(message); });
+             player.addListener('account_error', ({ message }) => { console.error(message); });
+             player.addListener('playback_error', ({ message }) => { console.error(message); });
+
+             var dID;
+             // Ready
+             player.addListener('ready', ({ device_id }) => {
+               console.log('Ready with Device ID', device_id);
+               dID = device_id;
+             });
+
+             // Not Ready
+             player.addListener('not_ready', ({ device_id }) => {
+               console.log('Device ID has gone offline', device_id);
+             });
+
+             // Playback status updates
+             player.addListener('player_state_changed', state => { 
+               console.log(state); 
+               controlWebPlayer(access_token, "", false);
+             });
+             // Connect to the player!
+             player.connect();
+           };
+         }
+         function controlWebPlayer(token, deviceName, web) {
+           var dev_id;
+            // Get current device playing Spotify
+            $.ajax({
+                url: 'https://api.spotify.com/v1/me/player',
+                type: 'GET',
+                headers: {
+                  'Authorization' : 'Bearer ' + token
+                },
+                contentType:"application/json",
+                success: function(response) {
+                    dev_id = response.device.id;
+                    $('#player').html(                  
+                     "<img id='pl-img' src=" + response.item.album.images[0].url + ">" +
+                     "<p> Currently Playing: " +  response.item.name + 
+                     " on " + response.device.name + "</p>"
+                  );
+                 },
+            });
+
+            // next track
+            document.getElementById('btn-next').onclick = function() {
+              $.ajax({
+                url: 'https://api.spotify.com/v1/me/player/next',
+                type: 'POST',
+                headers: {
+                  'Authorization' : 'Bearer ' + token
+                },
+                contentType:"application/json",
+               });
+            }
+
+            // prev track
+            document.getElementById('btn-prev').onclick = function() {
+              $.ajax({
+                url: 'https://api.spotify.com/v1/me/player/previous',
+                type: 'POST',
+                headers: {
+                  'Authorization' : 'Bearer ' + token
+                },
+                contentType:"application/json",
+               });
+            }
+
+            // play track
+            document.getElementById('btn-play').onclick = function() {
+              $.ajax({
+                url: 'https://api.spotify.com/v1/me/player/play',
+                type: 'PUT',
+                headers: {
+                  'Authorization' : 'Bearer ' + token
+                },
+                contentType:"application/json",
+               });
+            }
+
+            // pause track
+            document.getElementById('btn-pause').onclick = function() {
+              $.ajax({
+                url: 'https://api.spotify.com/v1/me/player/pause',
+                type: 'PUT',
+                headers: {
+                  'Authorization' : 'Bearer ' + token
+                },
+                contentType:"application/json",
+               });
+            }
+         }
+ 
          function findTopAlbums(map, items) { 
             var name; 
            for(var i=0; i< items.length; i++) { 
