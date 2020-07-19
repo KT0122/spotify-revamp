@@ -11,13 +11,7 @@ body {
   color: white;
 }
 
-#pl-img {
-    height: auto; 
-    width: auto; 
-    max-width: 230px; 
-    max-height: 230px;
-}
-
+/* Profile section */
 #prof-container {
     padding: 20px 40px 40px;
     max-width: 640px;
@@ -34,13 +28,112 @@ body {
     display: inline-block;
 }
 
+/* Player */
+#web-player {
+  text-align: center;
+}
+
+/* Favorites section */
+#favorites-container {
+    min-width: 80%;
+    width: 80%;
+    margin-right: auto;
+    margin-left: auto;
+}
+
+/* Playlist section */
+#t-play-container {
+  width: 100%;
+  padding: 20px;
+}
 .grid-container {
-  display: grid;
-  grid-gap: 20px;
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap;
 }
 
 .grid-item {
-  grid-row-start: 1;
-  grid-row-end: 3;
+  display: inline-block;
   text-align: center;
+  padding-right: 15px;
+}
+
+#pl-img {
+    height: auto; 
+    width: auto; 
+    max-width: 200px; 
+    max-height: 200px;
+}
+
+/* Top Songs section */
+#t-s-container {
+  height: 750px;
+  width: 400px;
+  padding: 20px;
+}
+.songs-container {
+  height: 700px;
+  width: 400px;
+  overflow-x:hidden;
+  overflow-y:auto;
+}
+.songs-item {
+  width: fit-content;
+  padding-bottom: 15px;
+  display: flex;
+}
+
+ #song-text {
+  margin-right: auto;
+  width:50%;
+  padding: 10px;
+}
+
+#song-img {
+    height: auto; 
+    width: auto; 
+    max-width: 80px; 
+    max-height: 80px;
+    border-radius: 20%;
+}
+
+/* Top Artist - Album section */
+#t-art-container {
+  width: 700px;
+  padding: 20px;
+}
+#t-alb-container {
+  width: 700px;
+  padding: 20px;
+}
+#ta-img {
+    height: auto; 
+    width: auto; 
+    max-width: 135px; 
+    max-height: 135px;
+    border-radius: 20%;
+}
+.ta-container {
+  overflow-x: scroll;
+  overflow-y: hidden;
+  white-space: nowrap; 
+  width: 700px;
+}
+
+/* ScrollBar Design */
+::-webkit-scrollbar {
+  width: 6px;
+  height: 6px;
+}
+
+::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 5px;
+  background:green;
+}
+::-webkit-scrollbar-corner {
+   background: gray;
 }
