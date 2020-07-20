@@ -122,9 +122,7 @@
            // Get top tracks(songs) info
            var topSongsInput = document.getElementById("Top Songs")
            var songTopUrl = '';
-           $.ajax({
-               
-               switch(topSongsInput) {
+            switch(topSongsInput) {
                    case 0:
                    songTopUrl = 'https://api.spotify.com/v1/me/top/tracks?time_range=short_term'
                    break;
@@ -136,7 +134,7 @@
                    default:
                    songTopUrl = 'https://api.spotify.com/v1/me/top/tracks?time_range=long_term'
                }
-                
+           $.ajax({ 
                 url: songTopUrl,
                 type: 'GET',
                 headers: {
