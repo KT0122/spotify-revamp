@@ -33,6 +33,14 @@
 
           <div id="t-s-container" >  
             <h2> Top Songs </h2>
+            <label for="Time Range">Time Range:</label>
+			<select name="Top Songs" id="Top Songs">
+		        <option value=-1>All Time</option>
+			    <option value=1>Past 6 Months</option>
+				<option value=0>Past Month</option>
+				</select>
+			<br><br>
+			<input type="submit" value="Submit">
             <div id="showSongs" class="songs-container"></div>
           </div>
           
@@ -111,9 +119,25 @@
                 }
             });
 
-           // Get top tracks info
+           // Get top tracks(songs) info
+           var topSongsInput = document.getElementById("Top Songs")
+           var songTopUrl = '';
            $.ajax({
-                url: 'https://api.spotify.com/v1/me/top/tracks',
+               
+               switch(topSongsInput) {
+                   case 0:
+                   songTopUrl = 'https://api.spotify.com/v1/me/top/tracks?time_range=short_term'
+                   break;
+                
+                   case 1:
+                   songTopUrl = 'https://api.spotify.com/v1/me/top/tracks?time_range=medium_term'
+                   break;
+
+                   default:
+                   songTopUrl = 'https://api.spotify.com/v1/me/top/tracks?time_range=long_term'
+               }
+                
+                url: songTopUrl,
                 type: 'GET',
                 headers: {
                   'Authorization' : 'Bearer ' + access_token
