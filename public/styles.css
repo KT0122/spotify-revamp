@@ -79,8 +79,8 @@ a {
 
 /* Favorites section */
 #favorites-container {
-    min-width: 80%;
-    width: 80%;
+    min-width: 70%;
+    width: 70%;
     margin-right: auto;
     margin-left: auto;
 }
@@ -89,6 +89,7 @@ a {
 #t-play-container {
   width: 100%;
   padding: 20px;
+  float: left;
 }
 .grid-container {
   overflow-x: scroll;
@@ -113,7 +114,8 @@ a {
 #t-s-container {
   height: 750px;
   width: 400px;
-  padding: 20px;
+  padding-bottom: 8%;
+  float: left;
 }
 .songs-container {
   height: 700px;
@@ -140,15 +142,145 @@ a {
     max-height: 80px;
     border-radius: 20%;
 }
+.img-container {
+    position: relative;
+    height: 130px; 
+    width: 130px; 
+    max-width: 130px; 
+    max-height: 130px;
+    border-radius: 20%;
+}
+
+.song-img {
+    height: auto; 
+    width: auto; 
+    max-width: 130px; 
+    max-height: 130px;
+    border-radius: 20%;
+}
+
+.overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  width: 0;
+  height: 100%;
+  transition: .1s ease;
+}
+
+/* .img-container:hover .overlay {
+    height: 130px; 
+    width: 130px; 
+    max-width: 130px; 
+    max-height: 130px;
+    border-radius: 20%;
+} */
+.img-container:hover .song-img {
+     height: 130px; 
+    width: 130px; 
+    max-width: 130px; 
+    max-height: 130px;
+    border-radius: 20%;
+  opacity: 0.3;
+}
+
+.img-container:hover .overlay {
+    height: 130px; 
+    width: 130px; 
+    max-width: 130px; 
+    max-height: 130px;
+    border-radius: 20%;
+  opacity: 1;
+}
+
+
+.over-text {
+  white-space: nowrap; 
+  background-color: #1ED760;
+  font-size: 1rem;
+  font-weight: bold;
+  color: black;
+  position: absolute;
+  overflow: hidden;
+  border: none;
+  border-radius: .5vw;
+  padding: 0.3rem 1rem;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -20%);
+  -ms-transform: translate(-50%, -20%);
+}
+
+.over-text2 {
+  white-space: nowrap; 
+  background-color: #1ED760;
+   font-size: 1rem;
+   font-weight: bold;
+  color: black;
+  position: absolute;
+  overflow: hidden;
+  border: none;
+  border-radius: .5vw;
+  padding: 0.3rem 1rem;
+  top: 80%;
+  left: 50%;
+  transform: translate(-50%, -80%);
+  -ms-transform: translate(-50%, -80%);
+}
+
+
+/* Audio Analysis */
+/* The Modal (background) */
+.modal {
+  display: none; /* Hidden by default */
+  position: fixed; /* Stay in place */
+  z-index: 1; /* Sit on top */
+  left: 0;
+  top: 0;
+  width: 100%; /* Full width */
+  height: 100%; /* Full height */
+  overflow: auto; /* Enable scroll if needed */
+  background-color: rgb(0,0,0); /* Fallback color */
+  background-color: rgba(0,0,0,0.4); /* Black w/ opacity */
+}
+
+/* Modal Content/Box */
+.modal-content {
+  background-color: black;
+  color:white;
+  margin: 15% auto; /* 15% from the top and centered */
+  padding: 20px;
+  border: 1px solid #888;
+  width: 80%; /* Could be more or less, depending on screen size */
+}
+
+/* The Close Button */
+.close {
+  color: #aaa;
+  float: right;
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.close:hover,
+.close:focus {
+  color: black;
+  text-decoration: none;
+  cursor: pointer;
+}
 
 /* Top Artist - Album section */
 #t-art-container {
   width: 700px;
   padding: 20px;
+  float: right;
 }
 #t-alb-container {
   width: 700px;
   padding: 20px;
+  float: right;
 }
 #ta-img {
     height: auto; 
