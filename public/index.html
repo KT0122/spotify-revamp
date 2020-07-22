@@ -8,7 +8,7 @@
   <body>
     <div id="login">
       <h1>Spotify Test Page</h1>
-      <button id='login-btn' ><a href="/login">Log in with Spotify</a></button>
+      <a href="/login"><button id='login-btn'>Log in with Spotify</button></a>
     </div>
 
     <script src="https://code.jquery.com/jquery-git2.js"></script>
@@ -58,6 +58,7 @@
                   console.log(response)
                   var items;
                   eval("items = response."+searchType+"s.items;");
+                  $('#search-results').append("<div class='show-results'>");
                   for(var i=0; i<items.length; i++) {
                     displayIndividualResults(items, i, searchType);
                   }
@@ -71,6 +72,12 @@
                 + "<h3>"+items[i].name+"</h3></a>");
             var image, artists, owners;
             if (type === "album") {
+              var img;
+              if (items[i].images[0]) {
+                img = items[i].images[0].url
+              } else {
+                img = "./noImage.png"
+              }
               image = ("<a class='result-img' href='" + items[i].external_urls.spotify + "' target='_blank'>"
                 + "<img id='pl-img' src=" + img + " alt='No image available'></a>");
               
@@ -135,7 +142,9 @@
             result += image + name + owners + artists + "</div>";
             $('#search-results').append(result);
           }
+          $('#search-results').append("</div>");
         $('#loggedin').hide();
+        $('#search-results').show();
         }
       }
     </script>
@@ -143,19 +152,19 @@
     <div id="search-bar">
       <form id="search-form" method="dialog" target="_blank">
         <!-- <label for="search"> -->Search <!-- </label> -->
-        <select name="type">
+        <select name="type" class="search-btn">
           <option value="album">albums</option>
           <option value="artist">artists</option>
           <option value="track" selected="selected">songs</option>
           <option value="playlist">playlists</option>
         </select>
         <input type="search" name="search">
-        <input type="submit" value="Search" onclick="find()">
+        <input type="submit" value="Search" class="search-btn" onclick="find()">
       </form>
     </div> 
 
     <!-- SEARCH RESULTS HERE-->
-    <div id="search-results"></div>
+    <div id="search-results" style="display:none;"></div>
     
     <!-- PROFILE PAGE HERE -->
      <div id="loggedin">
@@ -259,7 +268,7 @@
 
            // Get top tracks info
            $.ajax({
-                url: 'https://api.spotify.com/v1/me/top/tracks?limit=5&offset=15',
+                url: 'https://api.spotify.com/v1/me/top/tracks?limit=5',
                 type: 'GET',
                 headers: {
                   'Authorization' : 'Bearer ' + access_token
@@ -288,6 +297,8 @@
                 success: function(response) {
                   $('#login').hide();
                   $('#loggedin').show();
+                  $('#search-bar').show();
+                  $('#search-results').hide();
                   
                   var items = response.items;
                   for(var i=0; i<items.length; i++) {
