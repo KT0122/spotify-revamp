@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <title>Spotify Revamped</title>
     <link href="styles.css" rel="stylesheet" type="text/css"/>
+
   </head>
   <body>
       <div id="login">
@@ -18,10 +19,11 @@
      <div id="loggedin">
 
         <div id="showUser"></div>
-
+ 
+        <div id="player"></div>         
         <div id="web-player">
-
-          <div id="player"></div>
+           <div id="player-name"></div>
+          
           <div id="current-device"></div>
           <button id='btn-prev' >Previous</button>
           <button id='btn-play' >Play</button>
@@ -360,10 +362,24 @@
                 },
                 contentType:"application/json",
                 success: function(response) {
-                    $('#player').html(                  
-                     "<img id='pl-img' src=" + response.item.album.images[0].url + ">" +
-                     "<h3> Currently Playing: " +  response.item.name + "</h3>" 
-                     //+ "<p>" + response.progress_ms + "</p>"
+                    $('#player').html(
+                    "<div class='curr-img-container'>" +                  
+                     "<img class='curr-song-img' src=" + response.item.album.images[0].url + ">" +
+                      "<div class='curr-overlay'>" +
+
+                         "<button class='over-text2' id='aa-btn-1' onclick='analyzeTrack(-1)' data-id='"+ response.item.id + "' data-name='" +response.item.name+"'>Features</button>" +
+
+                         "<div id='myModal' class='modal'>"+
+
+                           "<div class='modal-content'>"+
+                             "<span class='close'>&times;</span>"+
+                             "<p id='modal-text'>Some text in the Modal..</p>"+
+                           "</div>"+
+                         "</div>"+
+                       "</div>" +
+                       "</div>");
+                        $('#player-name').html(
+                      "<h3> Currently Playing: " +  response.item.name + "</h3>" 
                     );
                 },
               });
