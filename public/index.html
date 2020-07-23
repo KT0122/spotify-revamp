@@ -11,11 +11,7 @@
         <div class="tile">
             <img src="images/spotify-icon.png" alt="Spotify Logo">
              <h1>Welcome to Revampify</h1>
-<<<<<<< HEAD
             <a href="/login"><button class='button'>LOG IN WITH SPOTIFY</button></a>
-=======
-            <a href="/login"><button id='login-btn'>Log in with Spotify</button></a>
->>>>>>> 8b29054e8ada072c562cb606abfbc2ef0051ae47
          </div>
      </div>
 
@@ -149,8 +145,6 @@
             }
             // 
             result += image + name + owners + artists + "</div>";
-            var temp = document.getElementById('show-results');
-            console.log('temp.innerHTML()');
             $('#show-results').append(result);
           }
         $('#search-results').show();
@@ -834,10 +828,7 @@
               }
             }
          }
-<<<<<<< HEAD
-=======
          
->>>>>>> 8b29054e8ada072c562cb606abfbc2ef0051ae47
 
          function outputToDiv(items,i,id) {
           var type;
@@ -868,13 +859,8 @@
             }
           // Edit Top Songs Design Here!!!!
           } else if(id==="#showSongs") {
-<<<<<<< HEAD
-
-              if(items[i].album.images[0]) {
-=======
               type ='top song'
-              if(items[i].album.images[0]) {           
->>>>>>> 8b29054e8ada072c562cb606abfbc2ef0051ae47
+              if(items[i].album.images[0]) {     
                 $(id).append(             
                     "<div class='songs-item'>" +
                       "<div class='img-container'>" +
