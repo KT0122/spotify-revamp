@@ -4,21 +4,182 @@
     <meta charset="UTF-8">
     <title>Spotify Revamped</title>
     <link href="styles.css" rel="stylesheet" type="text/css"/>
+
   </head>
   <body>
-    <div id="login">
-      <h1>Spotify Test Page</h1>
-      <button id='login-btn' ><a href="/login">Log in with Spotify</a></button>
-    </div>
+      <div id="login">
+        <div class="tile">
+            <img src="images/spotify-icon.png" alt="Spotify Logo">
+             <h1>Welcome to Revampify</h1>
+            <a href="/login"><button class='button'>LOG IN WITH SPOTIFY</button></a>
+         </div>
+     </div>
 
+    <script src="https://code.jquery.com/jquery-git2.js"></script>
+    <script>
+        /**
+         * Obtains parameters from the hash of the URL
+         * @return Object
+         */
+        function getHashParams() {
+          var hashParams = {};
+          var e, r = /([^&;=]+)=?([^&;]*)/g,
+              q = window.location.hash.substring(1);
+          while ( e = r.exec(q)) {
+             hashParams[e[1]] = decodeURIComponent(e[2]);
+          }
+          return hashParams;
+        }
+       // Get user info
+        var params = getHashParams();
+
+        var access_token = params.access_token,
+            refresh_token = params.refresh_token,
+            error = params.error;
+        
+      function find(){
+        console.log('enetred find()');
+        var searchType = $('#search-form').serializeArray()[0].value;
+        var searchTerm = $('#search-form').serializeArray()[1].value;
+        console.log('searched for: ' + searchType + ', ' + searchTerm);
+        var term = searchType[0].toUpperCase() + searchType.slice(1);
+        if (term === "Track"){(term = "Song");}
+        $('#search-results').prepend('<p><strong>'+ term
+          + ' results for </strong>'+searchTerm)+'</p>';
+        console.log('1 we out here');
+        if (error) {
+          alert('There was an error during the search process');
+        } else if(access_token) {
+
+          console.log('2 we in here');
+          $.ajax({
+              url: 'https://api.spotify.com/v1/search?q='+searchTerm+'&type='+searchType+'&offset=0',
+              type: 'GET',
+              headers: {
+                'Content-Type': 'application/json',
+                'Authorization': 'Bearer ' + access_token
+              },
+              success: function(response) { 
+                  console.log('3 we in here'); 
+                  console.log(response)
+                  var items;
+                  eval("items = response."+searchType+"s.items;");
+                  for(var i=0; i<items.length; i++) {
+                    displayIndividualResults(items, i, searchType);
+                  }
+              }
+          });
+
+          function displayIndividualResults(items, i, type){
+            console.log('4 we in here');
+            var result = "<div class='result-item'>";
+            var name = ("<a href='" + items[i].external_urls.spotify + "' target='_blank'>"
+                + "<h3>"+items[i].name+"</h3></a>");
+            var image, artists, owners;
+            if (type === "album") {
+              var img;
+              if (items[i].images[0]) {
+                img = items[i].images[0].url
+              } else {
+                img = "./pictures/noImage.png"
+              }
+              image = ("<a href='" + items[i].external_urls.spotify + "' target='_blank'>"
+                + "<img id='pl-img' src=" + img + " alt='No image available'></a>");
+              
+              artists = "<h5>"
+              items[i].artists.forEach(function(artist, index){
+                artists += "<a href='"+artist.external_urls.spotify+"' target='_blank'>"+artist.name+"</a>, ";
+                //if (index > 4) {result += ...; break;}
+                });
+              //Remove last comma
+              artists = artists.substr(0, artists.length-2);
+              artists += "</h5>";
+              owners = "";
+            } else if (type === "artist") {
+              var img;
+              if (items[i].images[0]) {
+                img = items[i].images[0].url
+              } else {
+                img = "./pictures/noImage.png"
+              }
+              image = ("<a class='result-img' href='" + items[i].external_urls.spotify + "' target='_blank'>"
+                + "<img src=" + img + " alt='No image available'></a>");
+              
+              artists = "";
+              owners = "";
+            } else if (type === "track") {
+              console.log('entered track search');
+              var img;
+              if (items[i].album.images[0]) {
+                img = items[i].album.images[0].url
+              } else {
+                img = "./pictures/noImage.png"
+              }
+              console.log('img set');
+              image = ("<a class='result-img' href='" + items[i].external_urls.spotify + "' target='_blank'>"
+                + "<img src=" + img + " alt='No image available'></a>");
+              
+              artists = "<h5>"
+              items[i].artists.forEach(function(artist, index){
+                artists += "<a href='"+artist.external_urls.spotify+"' target='_blank'>"+artist.name+"</a>, ";
+                //if (index > 4) {result += ...; break;}
+                });
+              //Remove last comma
+              artists = artists.substr(0, artists.length-2);
+              artists += "</h5>";
+              owners = "";
+            } else if (type === "playlist") {
+              var img;
+              if (items[i].images[0]) {
+                img = items[i].images[0].url
+              } else {
+                img = "./pictures/noImage.png"
+              }
+              image = ("<a class='result-img' href='" + items[i].external_urls.spotify + "' target='_blank'>"
+                + "<img src=" + img + " alt='No image available'></a>");
+              
+              artists = "";
+              owners = "<a href='"+items[i].owner.external_urls.display_name+"' tarbet='_blank'>"+items[i].owner.display_name+"</a>";
+            } else {
+              console.log('5 type = ' + type);
+            }
+            // 
+            result += image + name + owners + artists + "</div>";
+            $('#show-results').append(result);
+          }
+        $('#search-results').show();
+        }
+      }
+    </script>
+
+    <div id="search-bar">
+      <form id="search-form" method="dialog" target="_blank">
+        <!-- <label for="search"> -->Search <!-- </label> -->
+        <select name="type">
+          <option value="album">albums</option>
+          <option value="artist">artists</option>
+          <option value="track" selected="selected">songs</option>
+          <option value="playlist">playlists</option>
+        </select>
+        <input type="search" name="search">
+        <input type="submit" value="Search" id="search-btn" onclick="find()">
+      </form>
+    </div> 
+
+    <!-- SEARCH RESULTS HERE-->
+    <div id="search-results">
+      <div id="show-results"></div>
+    </div>
+    
     <!-- PROFILE PAGE HERE -->
      <div id="loggedin">
 
         <div id="showUser"></div>
-
+ 
+        <div id="player"></div>         
         <div id="web-player">
-
-          <div id="player"></div>
+           <div id="player-name"></div>
+          
           <div id="current-device"></div>
           <button id='btn-prev' >Previous</button>
           <button id='btn-play' >Play</button>
@@ -28,11 +189,18 @@
           <div id="display-options"></div> 
 
         </div>
-
         <div id="favorites-container">
-
+          <h1> Favorites </h1>
           <div id="t-s-container" >  
             <h2> Top Songs </h2>
+            <label for="Time Range">Time Range:</label>
+			<select name="Top Songs" id="Top Songs">
+		        <option value=-1>All Time</option>
+			    <option value=1>Past 6 Months</option>
+				<option value=0>Past Month</option>
+				</select>
+			<br><br>
+			
             <div id="showSongs" class="songs-container"></div>
           </div>
           
@@ -53,7 +221,7 @@
 
         </div>
      </div>
-     
+
     <script src="https://code.jquery.com/jquery-1.10.1.min.js"></script>
     <script src="https://sdk.scdn.co/spotify-player.js"></script>
 
@@ -93,27 +261,41 @@
                 },
                 success: function(response) {
                 outputToDiv(response, 0, "#showUser");
-                  // Get playlists 
-                  $.ajax({
-                       url: 'https://api.spotify.com/v1/users/'+ response.id +'/playlists',
-                       type: 'GET',
-                       headers: {
-                         'Authorization' : 'Bearer ' + access_token
-                       },
-                       contentType:"application/json",
-                       success: function(response) {   
-                         var items = response.items;
-                         for(var i=0; i<items.length; i++) {
-                           outputToDiv(items, i, "#showPlaylists");
-                         }
-                       }
-                  });
                 }
             });
+          // Get playlists 
+          $.ajax({
+                url: 'https://api.spotify.com/v1/me/playlists',
+                type: 'GET',
+                headers: {
+                  'Authorization' : 'Bearer ' + access_token
+                },
+                contentType:"application/json",
+                success: function(response) {   
+                  var items = response.items;
+                  for(var i=0; i<items.length; i++) {
+                    outputToDiv(items, i, "#showPlaylists");
+                  }
+                }
+          });
 
-           // Get top tracks info
-           $.ajax({
-                url: 'https://api.spotify.com/v1/me/top/tracks',
+           // Get top tracks(songs) info
+           var topSongsInput = document.getElementById("Top Songs")
+           var songTopUrl = '';
+            switch(topSongsInput) {
+                   case 0:
+                   songTopUrl = 'https://api.spotify.com/v1/me/top/tracks?time_range=short_term'
+                   break;
+                
+                   case 1:
+                   songTopUrl = 'https://api.spotify.com/v1/me/top/tracks?time_range=medium_term'
+                   break;
+
+                   default:
+                   songTopUrl = 'https://api.spotify.com/v1/me/top/tracks?time_range=long_term'
+               }
+           $.ajax({ 
+                url: songTopUrl,
                 type: 'GET',
                 headers: {
                   'Authorization' : 'Bearer ' + access_token
@@ -142,6 +324,7 @@
                 success: function(response) {
                   $('#login').hide();
                   $('#loggedin').show();
+                  $('#search-bar').show();
                   
                   var items = response.items;
                   for(var i=0; i<items.length; i++) {
@@ -195,7 +378,7 @@
              window.onSpotifyWebPlaybackSDKReady = () => {
                const token = t;
                const player = new Spotify.Player({
-                 name: 'Web Playback SDK Quick Start Player',
+                 name: "Revampify's Web Player",
                  getOAuthToken: cb => { cb(token); }
                });
 
@@ -242,10 +425,10 @@
                  // User will always see the option to play in browser 
                  if(!clients.has(player.name)) {
                    $('#display-options').append(
-                     "<button id='"+ device_id + "' onClick='reply_click(this.id)'>Web Playback SDK Quick Start Player</button>" 
+                     "<button id='"+ device_id + "' onClick='reply_click(this.id)'>Revampify's Web Player</button>" 
                     )
                  }
-                 clients.add('Web Playback SDK Quick Start Player');
+                 clients.add("Revampify's Web Player");
                });
 
                // Not Ready
@@ -335,11 +518,24 @@
                 },
                 contentType:"application/json",
                 success: function(response) {
-                    console.log(response);
-                    $('#player').html(                  
-                     "<img id='pl-img' src=" + response.item.album.images[0].url + ">" +
-                     "<h3> Currently Playing: " +  response.item.name + "</h3>" 
-                     //+ "<p>" + response.progress_ms + "</p>"
+                    $('#player').html(
+                    "<div class='curr-img-container'>" +                  
+                     "<img class='curr-song-img' src=" + response.item.album.images[0].url + ">" +
+                      "<div class='curr-overlay'>" +
+
+                         "<button class='over-text2' id='aa-btn-1' onclick='analyzeTrack(-1)' data-id='"+ response.item.id + "' data-name='" +response.item.name+"'>Features</button>" +
+
+                         "<div id='myModal' class='modal'>"+
+
+                           "<div class='modal-content'>"+
+                             "<span class='close'>&times;</span>"+
+                             "<p id='modal-text'></p>"+
+                           "</div>"+
+                         "</div>"+
+                       "</div>" +
+                       "</div>");
+                        $('#player-name').html(
+                      "<h3> Currently Playing: " +  response.item.name + "</h3>" 
                     );
                 },
               });
@@ -352,7 +548,6 @@
                 },
                 contentType:"application/json",
                 success: function(response) {
-                    console.log(response);
                     dev_id = response.device.id;
                     $('#current-device').html(                  
                      "<h3> on " + response.device.name + "</h3>"
@@ -401,9 +596,242 @@
               return [...map];            
          }
         
+         function playThis(num,type) {
+             if(type === 'top song') {
+               playOneSong(document.getElementById('track'+num).value);
+             } else if (type === 'playlist song') {
+               playOneSong(document.getElementById('playlist-track'+num).value);
+             } else if (type === 'playlist') {
+               playSeveralSongs(document.getElementById('playlist'+num).value);
+            } else if (type === 'album song') {
+               playOneSong(document.getElementById('album-track'+num).value);
+             } else if (type === 'album') {
+               playSeveralSongs(document.getElementById('album'+num).value);
+             } else if (type === 'artists') {
+               playSeveralSongs(document.getElementById('artists'+num).value);
+             } 
+         }
 
+         function playOneSong(value) {
+           $.ajax({
+                url: 'https://api.spotify.com/v1/me/player/play',
+                type: 'PUT',
+                dataType: 'json',
+                data: JSON.stringify({ uris: [value]}) ,
+                headers: {
+                  'Authorization' : 'Bearer ' + access_token
+                },
+                contentType:"application/json",
+            });
+         }
+
+         function playSeveralSongs(value) {
+            $.ajax({
+                url: 'https://api.spotify.com/v1/me/player/play',
+                type: 'PUT',
+                dataType: 'json',
+                data: JSON.stringify({ context_uri: value}) ,
+                headers: {
+                  'Authorization' : 'Bearer ' + access_token
+                },
+                contentType:"application/json",
+                });
+         }
+         
+         function analyzeTrack(num) {
+            const track = document.querySelector('#aa-btn'+num);
+
+            $.ajax({
+                url: 'https://api.spotify.com/v1/audio-features/'+track.dataset.id,
+                type: 'GET',
+                headers: {
+                  'Authorization' : 'Bearer ' +  access_token
+                },
+                contentType:"application/json",
+                success: function(response) {
+                    var ms = response.duration_ms;
+                    var min = Math.floor((ms/1000/60) << 0);
+                    var sec = Math.floor((ms/1000) % 60);
+                    min = (min < 10) ? "0" + min : min;
+                    sec = (sec < 10) ? "0" + sec : sec;
+                   console.log(response);
+                   $("#modal-text").html(
+                     "<h3> Song Features: "+track.dataset.name+"</h3>" + 
+                     "<p> Duration: "+ min + ':' + sec +" minutes </p>" +
+                     "<p> Tempo: "+ response.tempo+" BPM </p>"+
+                     "<p> Time Signature: "+ response.time_signature+"</p>" +
+                     "<p> Key: "+ response.key+" </p>" +
+                     "<p> Loudness: "+ response.loudness+" dB</p>" +
+                     "<hr>" +
+                     "<p> Danceability: "+response.danceability*100+"%</p>" +
+                     "<p> Positivity: "+ response.valence*100+"%</p>" +
+                     "<p> Energy: "+ response.energy*100+"%</p>"+
+                     "<p> Acousticness: "+ response.acousticness*100+"%</p>" +
+                     "<p> Instrumentalness: "+ response.instrumentalness*100+"%</p>" +
+                     "<p> Liveness: "+ response.liveness*100+"%</p>" +
+                     "<p> Speechiness: "+ response.speechiness*100+"%</p>"
+                   );
+                },
+              });
+            
+            popUpModalBox();
+         }
+
+         function analyzeSeveralTracks(num,type) {
+            var playlist = document.querySelector('#playlist-btn'+num);
+            $.ajax({
+                url: 'https://api.spotify.com/v1/playlists/' + playlist.dataset.id + '/tracks',
+                type: 'GET',
+                headers: {
+                  'Authorization' : 'Bearer ' +  access_token
+                },
+                contentType:"application/json",
+                success: function(response) {
+                   var songsArr = [];   
+                   for(var i=0; i<response.items.length; i++) {
+                     songsArr.push(response.items[i].track.id);  
+                   }
+        
+                   $.ajax({
+                       url: 'https://api.spotify.com/v1/audio-features?ids='+songsArr,
+                       type: 'GET',
+                       headers: {
+                         'Authorization' : 'Bearer ' +  access_token
+                       },
+                       contentType:"application/json",
+                       success: function(response) {
+                         var ms = response.duration_ms;
+                         var min = Math.floor((ms/1000/60) << 0);
+                         var sec = Math.floor((ms/1000) % 60);
+                         min = (min < 10) ? "0" + min : min;
+                         sec = (sec < 10) ? "0" + sec : sec;
+                         console.log(response.audio_features);
+
+                         var danceability=0;
+                         var valence=0;
+                         var energy=0;
+                         var acousticness=0;
+                         var instrumentalness=0;
+                         var liveness=0;
+                         var speechiness=0;
+                         var n =response.audio_features.length;
+                         for(var i=0; i<n; i++) {
+                           danceability += response.audio_features[i].danceability;
+                           valence += response.audio_features[i].valence;
+                           energy += response.audio_features[i].energy;
+                           acousticness += response.audio_features[i].acousticness;
+                           instrumentalness += response.audio_features[i].instrumentalness;
+                           liveness += response.audio_features[i].liveness;
+                           speechiness += response.audio_features[i].speechiness;
+                         }
+                        console.log(danceability);
+                         $("#modal-text").html(
+                           "<h3> Playlist Features: "+playlist.dataset.name+"</h3>" + 
+                           "<p> Danceability: "+danceability*100/n+"%</p>" +
+                           "<p> Positivity: "+ valence*100/n+"%</p>" +
+                           "<p> Energy: "+ energy*100/n+"%</p>"+
+                           "<p> Acousticness: "+ acousticness*100/n+"%</p>" +
+                           "<p> Instrumentalness: "+ instrumentalness*100/n+"%</p>" +
+                           "<p> Liveness: "+ liveness*100/n+"%</p>" +
+                           "<p> Speechiness: "+ speechiness*100/n+"%</p>"
+                         );
+                       },
+                    });
+                 },
+              });
+           
+            popUpModalBox();
+         }
+
+        
+         function showSongs(num,type) {
+        
+            if(type==='playlist') {
+              getSongs(document.querySelector('#pl'+num),type);
+            } else if (type==='album') {
+              getSongs(document.querySelector('#al'+num),type);
+            }
+           
+          popUpModalBox();
+         }
+         function getSongs(query,type) {
+             var URL='';
+             if(type==='playlist') {
+               URL = 'https://api.spotify.com/v1/playlists/' + query.dataset.id + '/tracks';
+             } else {
+               URL = 'https://api.spotify.com/v1/albums/' + query.dataset.id + '/tracks';
+             }
+           $.ajax({
+                url: URL,
+                type: 'GET',
+                headers: {
+                  'Authorization' : 'Bearer ' +  access_token
+                },
+                contentType:"application/json",
+                success: function(response) {
+                    var text = type + ' song';
+                    
+                    $("#modal-text").append(
+                     "<h3> Songs of "+type+": "+ query.dataset.name+"</h3>" + 
+                     "<hr>" 
+                   );
+                   console.log(response);
+                   if(type==='playlist') {
+                     for(var i=0; i<response.items.length; i++) {
+                       $("#modal-text").append(
+                         "<h4>" + response.items[i].track.name  + "<h4>"
+                       );
+                       for(var j=0; j< response.items[i].track.album.artists.length; j++) {
+                         $("#modal-text").append(
+                          "<p> Artist: " + response.items[i].track.album.artists[j].name + "</p>"
+                         );
+                       }
+                       $("#modal-text").append(        
+                        '<button id="'+type+'-track' + i +'" onclick="playThis(\'' + i  +'\',\'' + text + '\')" class="pl-over-text" value="'+response.items[i].track.uri+'"> Play </button>' +
+                        "<hr>");
+                     }
+                   } else {
+                    for(var i=0; i<response.items.length; i++) {
+                       $("#modal-text").append(
+                         "<h4>" + response.items[i].name  + "<h4>"
+                       );
+                       for(var j=0; j< response.items[i].artists.length; j++) {
+                         $("#modal-text").append(
+                          "<p> Artist: " + response.items[i].artists[j].name + "</p>"
+                         );
+                       }
+                       $("#modal-text").append(        
+                        '<button id="'+type+'-track' + i +'" onclick="playThis(\'' + i  +'\',\'' + text + '\')" class="pl-over-text" value="'+response.items[i].uri+'"> Play </button>' +
+                        "<hr>");
+                    }
+                   }
+                 },
+             });
+         }
+        function popUpModalBox() {
+            var modal = document.getElementById("myModal");
+           
+            var span = document.getElementsByClassName("close")[0];
+            // When the user clicks on the button, open the modal
+            modal.style.display = "block";
+
+            // When the user clicks on <span> (x), close the modal
+            span.onclick = function() {
+              modal.style.display = "none";
+               $("#modal-text").html('');
+            }
+            // When the user clicks anywhere outside of the modal, close it
+            window.onclick = function(event) {
+              if (event.target == modal) {
+                modal.style.display = "none";
+                 $("#modal-text").html('');
+              }
+            }
+         }
+         
 
          function outputToDiv(items,i,id) {
+          var type;
           // Edit User Profile Design Here!!!!
           if(id==="#showUser") {
             if(items.images[0]) {
@@ -420,7 +848,8 @@
             } else {
             $(id).append(                
                "<div id='prof-container'>" +
-                 "<h2> No profile image </h2>" +
+                 "<img src='./pictures/noImage.png'>" +
+                 /*"<h2> No profile image </h2>" +*/
                  "<div id='prof-text'>" +
                    "<h2> User </h2>" +
                    "<h1>" + items.display_name + "</h1>" +
@@ -429,17 +858,37 @@
               );
             }
           // Edit Top Songs Design Here!!!!
-          } else if(id==="#showSongs") {  
-              if(items[i].album.images[0]) {           
+          } else if(id==="#showSongs") {
+              type ='top song'
+              if(items[i].album.images[0]) {     
                 $(id).append(             
                     "<div class='songs-item'>" +
-                      "<a href=" + items[i].uri + "> <img id='song-img' src=" + items[i].album.images[0].url + "> </a>" +
-                      "<div id='song-text'>" +
-                        "<p>" + items[i].name + "</p>" +
-                      "</div>" +
-                    "</div>"
-                );
+                      "<div class='img-container'>" +
+                        "<img class='song-img' src=" + items[i].album.images[0].url + ">" +
+                        "<div class='overlay'>" +
+                        '<button id="track' + i +'" onclick="playThis(\'' + i  +'\',\'' + type + '\')" class="over-text" value="'+items[i].uri+'"> Play </button>' +
 
+                         "<button class='over-text2' id='aa-btn"+i+"' onclick='analyzeTrack("+ i +")' data-id='"+ items[i].id + "' data-name='" +items[i].name+"'>Features</button>" +
+
+                         "<div id='myModal' class='modal'>"+
+
+                           "<div class='modal-content'>"+
+                             "<span class='close'>&times;</span>"+
+                             "<p id='modal-text'></p>"+
+                           "</div>"+
+                         "</div>"+
+                       "</div>"+  
+                    "</div>"+  
+
+                      "<div class='song-text' id='song-text" + i + "'>" +
+                        "<p>" + items[i].name + "</p>" +
+                      "</div>" 
+                );
+               for(var j=0; j< items[i].album.artists.length; j++) {
+                       $('#song-text'+i).append(
+                        "<p> Artist: " +items[i].album.artists[j].name + "</p>" + "</div>"
+                       );
+                }
               // No album image
               } else {
                 $(id).append(                             
@@ -453,10 +902,24 @@
             }
           // Edit Top Albums Design Here!!!!
           } else if(id==="#showAlbums") {  
+              type='album';
               if(items[i].images[0]) {           
                 $(id).append(                
                   "<div class='grid-item'>" +
-                    "<a href=" + items[i].uri + "> <img id='ta-img' src=" + items[i].images[0].url + "> </a>" +
+                     "<div class='img-container'>" +
+                        "<img class='song-img' src=" + items[i].images[0].url + ">" +
+                        "<div class='overlay'>" +
+                        '<button id="album' + i +'" onclick="playThis(\'' + i  +'\',\'' + type + '\')" class="over-text" value="'+items[i].uri+'"> Play </button>' +
+                        '<button id="al'+i+'" onclick="showSongs(\'' + i  +'\',\'' + type + '\')" class="over-text2" data-id="'+ items[i].id + '" data-name="' +items[i].name+'">Show songs</button>' +
+                         "<div id='myModal' class='modal'>"+
+
+                           "<div class='modal-content'>"+
+                             "<span class='close'>&times;</span>"+
+                             "<p id='modal-text'></p>"+
+                           "</div>"+
+                         "</div>"+
+                       "</div>"+  
+                    "</div>"+              
                     "<p>" + items[i].name + "</p>" +
                   "</div>"
                 );
@@ -472,11 +935,25 @@
             }
           // Edit Top Artists Design Here!!!!
           } else if (id==="#showArtists") {
+            type='artists';
             if(items[i].images[0]) {
             $(id).append(                
                  "<div class='grid-item'>" +
-                   "<a href=" + items[i].uri + "> <img id='ta-img' src=" + items[i].images[0].url + "> </a>" +
-                   "<p>" + items[i].name + "</p>" +
+                      "<div class='img-container'>" +
+                        "<img class='song-img' src=" + items[i].images[0].url + ">" +
+                        "<div class='overlay'>" +
+                        '<button id="artists' + i +'" onclick="playThis(\'' + i  +'\',\'' + type + '\')" class="over-text" value="'+items[i].uri+'"> Play </button>' +
+
+                         "<div id='myModal' class='modal'>"+
+
+                           "<div class='modal-content'>"+
+                             "<span class='close'>&times;</span>"+
+                             "<p id='modal-text'></p>"+
+                           "</div>"+
+                         "</div>"+
+                       "</div>"+  
+                    "</div>"+              
+                    "<p>" + items[i].name + "</p>" +
                  "</div>"
                 );
             } else {
@@ -489,10 +966,27 @@
             }
           // Edit Playlists Design Here!!!!   
           } else {
+            type ='playlist';
            if(items[i].images[0]) {
            $(id).append(        
                 "<div class='grid-item'>" +
-                    "<a href=" + items[i].uri + "> <img id='pl-img' src=" + items[i].images[0].url + "> </a>" +
+                    "<div class='pl-img-container'>" +
+                        "<img class='pl-img' src=" + items[i].images[0].url + "> </a>" +
+                        "<div class='pl-overlay'>" +
+                          '<button id="playlist' + i +'" onclick="playThis(\'' + i  +'\',\'' + type + '\')" class="over-text" value="'+items[i].uri+'"> Play </button>' +
+                          '<button id="pl'+i+'" onclick="showSongs(\'' + i  +'\',\'' + type + '\')" class="over-text2" data-id="'+ items[i].id + '" data-name="' +items[i].name+'">Show songs</button>' +
+                          '<button id="playlist-btn'+i+'" onclick="analyzeSeveralTracks(\'' + i  +'\',\'' + type + '\')" class="over-text3" data-id="'+ items[i].id +'" data-name="' +items[i].name+'">Features</button>' +
+
+                         "<div id='myModal' class='modal'>"+
+
+                           "<div class='modal-content'>"+
+                             "<span class='close'>&times;</span>"+
+                             "<p id='modal-text'></p>"+
+                           "</div>"+
+                         "</div>"+
+                       "</div>"+  
+
+                    
                     "<p>" + items[i].name + "</p>" +
                 "</div>"
                 ); 
@@ -511,9 +1005,10 @@
         // render initial screen
         $('#login').show();
         $('#loggedin').hide();
+        $('#search-bar').hide();
+        $('#search-results').hide();
         }
 
     </script>
-
   </body>
 </html>
