@@ -11,7 +11,7 @@
         <div class="tile">
             <img src="images/spotify-icon.png" alt="Spotify Logo">
              <h1>Welcome to Revampify</h1>
-            <a href="/login"><button id='login-btn'>Log in with Spotify</button></a>
+            <a href="/login"><button class='button'>LOG IN WITH SPOTIFY</button></a>
          </div>
      </div>
 
@@ -42,8 +42,10 @@
         var searchType = $('#search-form').serializeArray()[0].value;
         var searchTerm = $('#search-form').serializeArray()[1].value;
         console.log('searched for: ' + searchType + ', ' + searchTerm);
-        $('#search-results').html('<p><strong>'+searchType[0].toUpperCase()
-          +searchType.slice(1)+ ' results for </strong>'+searchTerm)+'</p>';
+        var term = searchType[0].toUpperCase() + searchType.slice(1);
+        if (term === "Track"){(term = "Song");}
+        $('#search-results').prepend('<p><strong>'+ term
+          + ' results for </strong>'+searchTerm)+'</p>';
         console.log('1 we out here');
         if (error) {
           alert('There was an error during the search process');
@@ -51,7 +53,7 @@
 
           console.log('2 we in here');
           $.ajax({
-              url: 'https://api.spotify.com/v1/search?q='+searchTerm+'&type='+searchType+'&limit=6&offset=0',
+              url: 'https://api.spotify.com/v1/search?q='+searchTerm+'&type='+searchType+'&offset=0',
               type: 'GET',
               headers: {
                 'Content-Type': 'application/json',
@@ -62,7 +64,6 @@
                   console.log(response)
                   var items;
                   eval("items = response."+searchType+"s.items;");
-                  $('#search-results').append("<div class='show-results'>");
                   for(var i=0; i<items.length; i++) {
                     displayIndividualResults(items, i, searchType);
                   }
@@ -80,9 +81,9 @@
               if (items[i].images[0]) {
                 img = items[i].images[0].url
               } else {
-                img = "./noImage.png"
+                img = "./pictures/noImage.png"
               }
-              image = ("<a class='result-img' href='" + items[i].external_urls.spotify + "' target='_blank'>"
+              image = ("<a href='" + items[i].external_urls.spotify + "' target='_blank'>"
                 + "<img id='pl-img' src=" + img + " alt='No image available'></a>");
               
               artists = "<h5>"
@@ -99,7 +100,7 @@
               if (items[i].images[0]) {
                 img = items[i].images[0].url
               } else {
-                img = "./noImage.png"
+                img = "./pictures/noImage.png"
               }
               image = ("<a class='result-img' href='" + items[i].external_urls.spotify + "' target='_blank'>"
                 + "<img src=" + img + " alt='No image available'></a>");
@@ -112,7 +113,7 @@
               if (items[i].album.images[0]) {
                 img = items[i].album.images[0].url
               } else {
-                img = "./noImage.png"
+                img = "./pictures/noImage.png"
               }
               console.log('img set');
               image = ("<a class='result-img' href='" + items[i].external_urls.spotify + "' target='_blank'>"
@@ -132,7 +133,7 @@
               if (items[i].images[0]) {
                 img = items[i].images[0].url
               } else {
-                img = "./noImage.png"
+                img = "./pictures/noImage.png"
               }
               image = ("<a class='result-img' href='" + items[i].external_urls.spotify + "' target='_blank'>"
                 + "<img src=" + img + " alt='No image available'></a>");
@@ -144,10 +145,8 @@
             }
             // 
             result += image + name + owners + artists + "</div>";
-            $('#search-results').append(result);
+            $('#show-results').append(result);
           }
-          $('#search-results').append("</div>");
-        $('#loggedin').hide();
         $('#search-results').show();
         }
       }
@@ -156,19 +155,21 @@
     <div id="search-bar">
       <form id="search-form" method="dialog" target="_blank">
         <!-- <label for="search"> -->Search <!-- </label> -->
-        <select name="type" class="search-btn">
+        <select name="type">
           <option value="album">albums</option>
           <option value="artist">artists</option>
           <option value="track" selected="selected">songs</option>
           <option value="playlist">playlists</option>
         </select>
         <input type="search" name="search">
-        <input type="submit" value="Search" class="search-btn" onclick="find()">
+        <input type="submit" value="Search" id="search-btn" onclick="find()">
       </form>
     </div> 
 
     <!-- SEARCH RESULTS HERE-->
-    <div id="search-results" style="display:none;"></div>
+    <div id="search-results">
+      <div id="show-results"></div>
+    </div>
     
     <!-- PROFILE PAGE HERE -->
      <div id="loggedin">
@@ -324,7 +325,6 @@
                   $('#login').hide();
                   $('#loggedin').show();
                   $('#search-bar').show();
-                  $('#search-results').hide();
                   
                   var items = response.items;
                   for(var i=0; i<items.length; i++) {
@@ -848,7 +848,8 @@
             } else {
             $(id).append(                
                "<div id='prof-container'>" +
-                 "<h2> No profile image </h2>" +
+                 "<img src='./pictures/noImage.png'>" +
+                 /*"<h2> No profile image </h2>" +*/
                  "<div id='prof-text'>" +
                    "<h2> User </h2>" +
                    "<h1>" + items.display_name + "</h1>" +
@@ -859,7 +860,7 @@
           // Edit Top Songs Design Here!!!!
           } else if(id==="#showSongs") {
               type ='top song'
-              if(items[i].album.images[0]) {           
+              if(items[i].album.images[0]) {     
                 $(id).append(             
                     "<div class='songs-item'>" +
                       "<div class='img-container'>" +
