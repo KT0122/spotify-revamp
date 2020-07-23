@@ -137,6 +137,7 @@ html {
   width: 100%;
   padding: 20px;
   float: left;
+  margin-bottom: 5%;
 }
 .grid-container {
   overflow-x: scroll;
@@ -209,6 +210,22 @@ html {
   transform: translate(-50%, -20%);
   -ms-transform: translate(-50%, -20%);
 }
+.over-text3 {
+  white-space: nowrap; 
+  background-color: #1ED760;
+   font-size: 1rem;
+   font-weight: bold;
+  color: black;
+  position: absolute;
+  overflow: hidden;
+  border: none;
+  border-radius: .5vw;
+  padding: 0.3rem 1rem;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  -ms-transform: translate(-50%, -50%);
+}
 
 /* Top Songs section */
 #t-s-container {
@@ -229,7 +246,7 @@ html {
   display: flex;
 }
 
- #song-text {
+ .song-text {
   margin-right: auto;
   width:50%;
   padding: 10px;
