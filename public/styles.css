@@ -8,14 +8,11 @@ html {
       font-family: "Raleway", sans-serif;
 }
 
-a {
-    color: white;
-    text-decoration: none;
-    display: inline-block;
-    font-weight: bold;
-}
 
 .button {
+    color: white;
+    text-decoration: none;
+    font-weight: bold;
   background-color: #1ED760;
   border: none;
   border-radius: .5vw;
@@ -75,6 +72,56 @@ a {
 /* Player */
 #web-player {
   text-align: center;
+  padding-bottom: 4%;
+}
+
+.curr-img-container {
+    display: block;
+    margin-left: auto;
+    margin-right: auto;
+    position: relative;
+    height: 200px;
+    width: 200px;
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 20%;
+}
+
+.curr-song-img {
+    height: auto; 
+    width: auto; 
+    max-width: 200px; 
+    max-height: 200px;
+    border-radius: 20%;
+}
+
+.curr-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  width: 0;
+  height: 100%;
+  transition: .1s ease;
+}
+
+.curr-img-container:hover .curr-song-img {
+     height: 200px; 
+    width: 200px; 
+    max-width: 200px; 
+    max-height: 200px;
+    border-radius: 20%;
+  opacity: 0.3;
+}
+
+.curr-img-container:hover .curr-overlay {
+   height: 200px; 
+    width: 200px; 
+    max-width: 200px; 
+    max-height: 200px;
+    border-radius: 20%;
+  opacity: 1;
 }
 
 /* Favorites section */
@@ -103,11 +150,64 @@ a {
   padding-right: 15px;
 }
 
-#pl-img {
+.pl-img-container {
+    position: relative;
+    height: 200px;
+    width: 200px;
+    max-width: 200px;
+    max-height: 200px;
+    border-radius: 20%;
+}
+
+.pl-img {
     height: auto; 
     width: auto; 
     max-width: 200px; 
     max-height: 200px;
+}
+
+.pl-overlay {
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  overflow: hidden;
+  width: 0;
+  height: 100%;
+  transition: .1s ease;
+}
+
+.pl-img-container:hover .pl-img {
+     height: 200px; 
+    width: 200px; 
+    max-width: 200px; 
+    max-height: 200px;
+  opacity: 0.3;
+}
+
+.pl-img-container:hover .pl-overlay {
+   height: 200px; 
+    width: 200px; 
+    max-width: 200px; 
+    max-height: 200px;
+  opacity: 1;
+}
+
+.pl-over-text {
+  white-space: nowrap; 
+  background-color: #1ED760;
+  font-size: 1rem;
+  font-weight: bold;
+  color: black;
+  position: relative;
+  overflow: hidden;
+  border: none;
+  border-radius: .5vw;
+  padding: 0.3rem 1rem;
+  top: 20%;
+  left: 50%;
+  transform: translate(-50%, -20%);
+  -ms-transform: translate(-50%, -20%);
 }
 
 /* Top Songs section */
@@ -150,24 +250,7 @@ a {
     max-height: 130px;
     border-radius: 20%;
 }
-.curr-img-container{
-    display: block;
-    margin-left: auto;
-    margin-right: auto;
-    position: relative;
-    height: 200px;
-    width: 200px;
-    max-width: 200px;
-    max-height: 200px;
-    border-radius: 20%;
-}
-.curr-song-img {
-    height: auto; 
-    width: auto; 
-    max-width: 200px; 
-    max-height: 200px;
-    border-radius: 20%;
-}
+
 
 .song-img {
     height: auto; 
@@ -186,40 +269,6 @@ a {
   width: 0;
   height: 100%;
   transition: .1s ease;
-}
-.curr-overlay {
-  position: absolute;
-  bottom: 0;
-  left: 0;
-  right: 0;
-  overflow: hidden;
-  width: 0;
-  height: 100%;
-  transition: .1s ease;
-}
-/* .img-container:hover .overlay {
-    height: 130px; 
-    width: 130px; 
-    max-width: 130px; 
-    max-height: 130px;
-    border-radius: 20%;
-} */
-.curr-img-container:hover .curr-song-img {
-     height: 200px; 
-    width: 200px; 
-    max-width: 200px; 
-    max-height: 200px;
-    border-radius: 20%;
-  opacity: 0.3;
-}
-
-.curr-img-container:hover .curr-overlay {
-   height: 200px; 
-    width: 200px; 
-    max-width: 200px; 
-    max-height: 200px;
-    border-radius: 20%;
-  opacity: 1;
 }
 
 .img-container:hover .song-img {
