@@ -38,13 +38,14 @@
             error = params.error;
         
       function find(){
+        $('#search-results').html('')
         console.log('enetred find()');
         var searchType = $('#search-form').serializeArray()[0].value;
         var searchTerm = $('#search-form').serializeArray()[1].value;
         console.log('searched for: ' + searchType + ', ' + searchTerm);
         var term = searchType[0].toUpperCase() + searchType.slice(1);
         if (term === "Track"){(term = "Song");}
-        $('#search-results').prepend('<p><strong>'+ term
+        $('#search-results').append('<p><strong>'+ term
           + ' results for </strong>'+searchTerm)+'</p>';
         console.log('1 we out here');
         if (error) {
@@ -145,9 +146,9 @@
             }
             // 
             result += image + name + owners + artists + "</div>";
-            $('#show-results').append(result);
+            
+            $('#search-results').append(result);
           }
-        $('#search-results').show();
         }
       }
     </script>
@@ -168,7 +169,6 @@
 
     <!-- SEARCH RESULTS HERE-->
     <div id="search-results">
-      <div id="show-results"></div>
     </div>
     
     <!-- PROFILE PAGE HERE -->

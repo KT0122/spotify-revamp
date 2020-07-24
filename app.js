@@ -14,8 +14,6 @@ var querystring = require('querystring');
   const CLIENTSECRET ='yourClientSecret'
   const URI = 'yourURI'
 
-
-
 var SpotifyWebApi = require('spotify-web-api-node');
 scopes = ['streaming','user-read-private', 'user-read-email','user-top-read', 'user-read-playback-state',
 'user-modify-playback-state']
