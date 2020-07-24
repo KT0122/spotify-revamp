@@ -469,9 +469,7 @@ input[type="search"] {
   white-space: nowrap;
   margin: auto 40px;
 }
-#show-results {
-  overflow: scroll hidden;
-  }
+
 .result-item {
   display: inline-block;
   text-align: center;
