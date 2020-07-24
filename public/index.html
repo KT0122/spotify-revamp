@@ -206,6 +206,14 @@
           
           <div id="t-art-container">  
             <h2> Top Artists </h2>
+            <label for="Time Range">Time Range:</label>
+			<select name="Top Artists" id="Top Artists">
+		        <option value=-1>All Time</option>
+			    <option value=1>Past 6 Months</option>
+				<option value=0>Past Month</option>
+				</select>
+			<br><br>
+            <input type="submit" value="Submit">
             <div id="showArtists" class="ta-container"></div>
           </div>
 
@@ -314,8 +322,22 @@
                 }
             });
            // Get top artists info
+           var topArtistsInput = document.getElementById("Top Artists")
+           var artsitTopUrl = '';
+            switch(topSongsInput) {
+                   case 0:
+                   artistTopUrl = 'https://api.spotify.com/v1/me/top/artists?time_range=short_term'
+                   break;
+                
+                   case 1:
+                   artistTopUrl = 'https://api.spotify.com/v1/me/top/artists?time_range=medium_term'
+                   break;
+
+                   default:
+                   artistTopUrl = 'https://api.spotify.com/v1/me/top/artists?time_range=long_term'
+               }
            $.ajax({
-                url: 'https://api.spotify.com/v1/me/top/artists',
+                url: artistTopUrl,
                 type: 'GET',
                 headers: {
                   'Authorization' : 'Bearer ' + access_token
@@ -859,6 +881,7 @@
             }
           // Edit Top Songs Design Here!!!!
           } else if(id==="#showSongs") {
+              $(".songs-item").empty();
               type ='top song'
               if(items[i].album.images[0]) {     
                 $(id).append(             
@@ -935,6 +958,7 @@
             }
           // Edit Top Artists Design Here!!!!
           } else if (id==="#showArtists") {
+            $(".ta-container").empty();
             type='artists';
             if(items[i].images[0]) {
             $(id).append(                
